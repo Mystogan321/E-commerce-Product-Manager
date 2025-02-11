@@ -22,32 +22,36 @@ const Navbar = () => {
           <div className="flex items-center space-x-3.5">
             <Link
               to="/"
-              className="p-2 hover:bg-indigo-700 rounded-full transition-colors"
+              className="p-2 hover:bg-indigo-700/20 rounded-full transition-colors"
+              title="Products"
             >
-              <ShoppingCart className="h-5 w-5" />
+              <Package className="h-6 w-6" />
             </Link>
             
             <Link
               to="/add"
-              className="p-2 hover:bg-indigo-700 rounded-full transition-colors"
+              className="p-2 hover:bg-indigo-700/20 rounded-full transition-colors"
+              title="Add Product"
             >
-              <PlusCircle className="h-5 w-5" />
+              <PlusCircle className="h-6 w-6" />
             </Link>
 
             <Link
               to="/manage"
-              className="p-2 hover:bg-indigo-700 rounded-full transition-colors"
+              className="p-2 hover:bg-indigo-700/20 rounded-full transition-colors"
+              title="Manage Products"
             >
-              <Settings2 className="h-5 w-5" />
+              <Settings2 className="h-6 w-6" />
             </Link>
             
             <Link
               to="/cart"
-              className="p-2 relative hover:bg-indigo-700 rounded-full transition-colors"
+              className="p-2 relative hover:bg-indigo-700/20 rounded-full transition-colors"
+              title="Cart"
             >
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCart className="h-6 w-6" />
               {cartItemsCount > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {cartItemsCount}
                 </span>
               )}
