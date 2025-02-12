@@ -14,6 +14,7 @@ const ProductList = () => {
   const { items, status, currentPage, searchQuery } = useSelector(
     (state: RootState) => state.products
   );
+  const { isDarkMode } = useSelector((state: RootState) => state.theme);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -35,13 +36,17 @@ const ProductList = () => {
   return (
     <div className="space-y-6">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`} />
         <input
           type="text"
           placeholder="Search products..."
           value={searchQuery}
           onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+            isDarkMode 
+              ? 'bg-gray-800 text-white placeholder-gray-400 border-gray-700' 
+              : 'bg-white text-gray-800 placeholder-gray-500 border-gray-300'
+          }`}
         />
       </div>
 
@@ -94,19 +99,34 @@ const ProductList = () => {
 
 const ProductCard = ({ product }: { product: Product }) => {
   const dispatch = useDispatch();
+  const { isDarkMode } = useSelector((state: RootState) => state.theme);
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div className={`rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow ${
+      isDarkMode 
+        ? 'bg-gray-800 hover:bg-gray-700' 
+        : 'bg-white hover:bg-gray-50'
+    }`}>
       <img
         src={product.image}
         alt={product.name}
         className="w-full h-48 object-cover"
       />
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
-        <p className="text-gray-600 mt-1 line-clamp-2">{parse(product.description)}</p>
+        <h3 className={`text-lg font-semibold ${
+          isDarkMode ? 'text-white' : 'text-gray-800'
+        }`}>
+          {product.name}
+        </h3>
+        <p className={`mt-1 line-clamp-2 ${
+          isDarkMode ? 'text-gray-300' : 'text-gray-600'
+        }`}>
+          {parse(product.description)}
+        </p>
         <div className="mt-4 flex items-center justify-between">
-          <span className="text-xl font-bold text-indigo-600">
+          <span className={`text-xl font-bold ${
+            isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
+          }`}>
             ${product.price.toFixed(2)}
           </span>
           <button

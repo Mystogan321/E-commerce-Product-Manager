@@ -1,6 +1,4 @@
-import React from 'react';
-
-import { UseSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../store/store';
 import { RootState } from '../store/store';
 import { deleteProduct } from '../store/productsSlice';

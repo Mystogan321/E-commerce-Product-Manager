@@ -15,6 +15,7 @@ const EditProduct = () => {
   const product = useSelector((state: RootState) => 
     state.products.items.find(p => p.id === id)
   );
+  const { isDarkMode } = useSelector((state: RootState) => state.theme);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -70,16 +71,22 @@ const EditProduct = () => {
     'link'
   ];
 
+  const inputClasses = `block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border-2 ${
+    isDarkMode 
+      ? 'bg-gray-800 border-gray-500 text-white placeholder-gray-400' 
+      : 'bg-white border-gray-400 text-gray-800 placeholder-gray-500'
+  }`;
+
   if (!product) {
     return <div>Product not found</div>;
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className={`max-w-2xl mx-auto ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
       <h2 className="text-2xl font-bold mb-6">Edit Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium">
+          <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Product Name
           </label>
           <input
@@ -87,30 +94,30 @@ const EditProduct = () => {
             required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="mt-1 block w-full rounded-md border shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className={inputClasses}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">
+          <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
             Description
           </label>
-          <div className="prose prose-sm max-w-none">
-            <Suspense fallback={<div className="h-48 bg-gray-100 rounded animate-pulse" />}>
+          <div className={`prose prose-sm max-w-none ${isDarkMode ? 'prose-invert' : ''}`}>
+            <Suspense fallback={<div className={`h-48 rounded animate-pulse ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`} />}>
               <ReactQuill
                 theme="snow"
                 value={formData.description}
                 onChange={(value) => setFormData({ ...formData, description: value })}
                 modules={modules}
                 formats={formats}
-                className="h-48 mb-12"
+                className={`h-48 mb-12 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'}`}
               />
             </Suspense>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium">
+          <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Price
           </label>
           <input
@@ -119,21 +126,14 @@ const EditProduct = () => {
             min="0"
             required
             value={formData.price}
-            onChange={(e) => {
-              const value = e.target.value.replace(/^-/, '');
-              setFormData({ ...formData, price: value });
-            }}
-            onKeyDown={(e) => {
-              if (['-', 'e', 'E'].includes(e.key)) {
-                e.preventDefault();
-              }
-            }}
-            className="mt-1 block w-full rounded-md border shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+            onKeyDown={(e) => e.key === '-' && e.preventDefault()}
+            className={inputClasses}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">
+          <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Image URL
           </label>
           <input
@@ -141,12 +141,12 @@ const EditProduct = () => {
             required
             value={formData.image}
             onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            className="mt-1 block w-full rounded-md border shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className={inputClasses}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">
+          <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Category
           </label>
           <input
@@ -154,7 +154,7 @@ const EditProduct = () => {
             required
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            className="mt-1 block w-full rounded-md border shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className={inputClasses}
           />
         </div>
 
@@ -162,13 +162,21 @@ const EditProduct = () => {
           <button
             type="button"
             onClick={() => navigate('/manage')}
-            className="px-4 py-2 border rounded-md hover:bg-muted"
+            className={`px-4 py-2 border rounded-md ${
+              isDarkMode 
+                ? 'border-gray-600 text-gray-100 hover:bg-gray-700' 
+                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+            }`}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+            className={`px-4 py-2 rounded-md ${
+              isDarkMode 
+                ? 'bg-indigo-700 text-white hover:bg-indigo-600' 
+                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+            }`}
           >
             Update Product
           </button>

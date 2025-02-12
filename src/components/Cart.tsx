@@ -7,6 +7,7 @@ import { Trash2, MinusCircle, PlusCircle } from 'lucide-react';
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
+  const { isDarkMode } = useSelector((state: RootState) => state.theme);
   
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -29,39 +30,50 @@ const Cart = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Shopping Cart</h2>
-      <div className="bg-white rounded-lg shadow">
-        <div className="divide-y">
+      <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+        Shopping Cart
+      </h2>
+      <div className={`rounded-lg shadow ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+        <div className="divide-y divide-gray-200 dark:divide-gray-700">
           {cartItems.map((item) => (
-            <div key={item.id} className="p-6 flex items-center">
+            <div 
+              key={item.id} 
+              className={`p-6 flex items-center ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}
+            >
               <img
                 src={item.image}
                 alt={item.name}
                 className="w-24 h-24 object-cover rounded"
               />
               <div className="ml-6 flex-1">
-                <h3 className="text-lg font-semibold">{item.name}</h3>
-                <p className="text-gray-600 mt-1">${item.price.toFixed(2)}</p>
+                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                  {item.name}
+                </h3>
+                <p className={`mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  ${item.price.toFixed(2)}
+                </p>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => dispatch(updateQuantity({ id: item.id, quantity: Math.max(0, item.quantity - 1) }))}
-                    className="text-gray-500 hover:text-indigo-600"
+                    className={`${isDarkMode ? 'text-gray-300 hover:text-indigo-400' : 'text-gray-500 hover:text-indigo-600'}`}
                   >
                     <MinusCircle className="h-5 w-5" />
                   </button>
-                  <span className="w-8 text-center">{item.quantity}</span>
+                  <span className={`w-8 text-center ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                    {item.quantity}
+                  </span>
                   <button
                     onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))}
-                    className="text-gray-500 hover:text-indigo-600"
+                    className={`${isDarkMode ? 'text-gray-300 hover:text-indigo-400' : 'text-gray-500 hover:text-indigo-600'}`}
                   >
                     <PlusCircle className="h-5 w-5" />
                   </button>
                 </div>
                 <button
                   onClick={() => dispatch(removeFromCart(item.id))}
-                  className="text-red-500 hover:text-red-700"
+                  className={`${isDarkMode ? 'text-red-400 hover:text-red-300' : 'text-red-500 hover:text-red-700'}`}
                 >
                   <Trash2 className="h-5 w-5" />
                 </button>
@@ -69,16 +81,22 @@ const Cart = () => {
             </div>
           ))}
         </div>
-        <div className="p-6 bg-gray-50 rounded-b-lg">
+        <div className={`p-6 rounded-b-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
           <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold">Total:</span>
-            <span className="text-2xl font-bold text-indigo-600">
+            <span className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+              Total:
+            </span>
+            <span className={`text-2xl font-bold ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>
               ${total.toFixed(2)}
             </span>
           </div>
           <button
             onClick={handleCheckout}
-            className="mt-4 w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
+            className={`mt-4 w-full py-3 px-4 rounded-lg transition-colors ${
+              isDarkMode 
+                ? 'bg-indigo-700 text-white hover:bg-indigo-600' 
+                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+            }`}
           >
             Proceed to Checkout
           </button>
