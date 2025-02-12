@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { fetchProducts, setCurrentPage, setSearchQuery } from '../store/productsSlice';
 import { addToCart, setLoading } from '../store/cartSlice';
-import { Search } from 'lucide-react';
+import { Search, SearchX, PlusCircle } from 'lucide-react';
 import { Product } from '../types/product';
 import parse from 'html-react-parser';
 import type { AppDispatch } from '../store/store';
+import { Link } from 'react-router-dom';
 
 
 const ProductList = () => {
@@ -59,9 +60,30 @@ const ProductList = () => {
       {status === 'succeeded' && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {filteredProducts.length > 0 ? (
+              displayedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <div className="max-w-md mx-auto">
+                  <SearchX className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    No Products Found
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Try adjusting your search or add a new product.
+                  </p>
+                  <Link
+                    to="/add"
+                    className="mt-6 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    <PlusCircle className="h-5 w-5 mr-2" />
+                    Add New Product
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           {totalPages > 1 && (

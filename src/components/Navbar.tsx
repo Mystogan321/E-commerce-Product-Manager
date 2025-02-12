@@ -22,32 +22,6 @@ const Navbar = () => {
           </Link>
           
           <div className="flex items-center space-x-4">
-            {user ? (
-              <div className="relative group">
-                <button className="flex items-center space-x-2 text-white">
-                  <span>{user.name}</span>
-                  <User className="h-6 w-6" />
-                </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block dark:bg-gray-800">
-                  <button
-                    onClick={() => dispatch(logout())}
-                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <Link to="/login" className="text-white hover:text-gray-200">
-                  Login
-                </Link>
-                <Link to="/register" className="text-white hover:text-gray-200">
-                  Register
-                </Link>
-              </>
-            )}
-            
             <Link
               to="/"
               className="p-2 hover:bg-indigo-700/20 rounded-full transition-colors"
@@ -96,6 +70,36 @@ const Navbar = () => {
                 <Moon className="h-5 w-5" />
               )}
             </button>
+
+            {user ? (
+              <div className="relative group">
+                <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 transition-colors">
+                  <span className="font-medium uppercase">
+                    {user.name.charAt(0)}
+                  </span>
+                </button>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block dark:bg-gray-800">
+                  <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                    {user.name}
+                  </div>
+                  <button
+                    onClick={() => dispatch(logout())}
+                    className="block w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="text-white hover:text-gray-200">
+                  Login
+                </Link>
+                <Link to="/register" className="text-white hover:text-gray-200">
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
