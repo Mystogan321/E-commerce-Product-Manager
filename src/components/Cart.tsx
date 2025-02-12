@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { removeFromCart, updateQuantity, clearCart } from '../store/cartSlice';
 import { Trash2, MinusCircle, PlusCircle } from 'lucide-react';
+import { useState } from 'react';
+import { updateProductSaleCount } from '../store/productsSlice';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -14,16 +16,114 @@ const Cart = () => {
     0
   );
 
+  const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [checkoutData, setCheckoutData] = useState({
+    name: '',
+    email: '',
+    address: ''
+  });
+
   const handleCheckout = () => {
-    alert('Checkout functionality would be implemented here');
-    dispatch(clearCart());
+    setShowCheckoutForm(true);
   };
 
-  if (cartItems.length === 0) {
+  const handleCheckoutSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!checkoutData.name || !checkoutData.email || !checkoutData.address) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    // Update product sale counts
+    cartItems.forEach(item => {
+      dispatch(updateProductSaleCount({ id: item.id, quantity: item.quantity }));
+    });
+
+    // Clear cart and show thank you
+    dispatch(clearCart());
+    setShowThankYou(true);
+    localStorage.removeItem('cart');
+  };
+
+  if (cartItems.length === 0 && !showThankYou) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-semibold text-gray-900">Your cart is empty</h2>
-        <p className="mt-2 text-gray-600">Add some products to your cart to get started.</p>
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Your cart is empty</h2>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">Add some products to your cart to get started.</p>
+      </div>
+    );
+  }
+
+  if (showThankYou) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Thank you for your order!</h2>
+        <p className="text-gray-600 dark:text-gray-400">We've sent a confirmation email to {checkoutData.email}</p>
+      </div>
+    );
+  }
+
+  if (showCheckoutForm) {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          Checkout Details
+        </h2>
+        <form onSubmit={handleCheckoutSubmit} className="space-y-4">
+          <div>
+            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Full Name
+            </label>
+            <input
+              type="text"
+              required
+              className={`mt-1 block w-full rounded-md border-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+              }`}
+              value={checkoutData.name}
+              onChange={(e) => setCheckoutData({...checkoutData, name: e.target.value})}
+            />
+          </div>
+          
+          <div>
+            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Email
+            </label>
+            <input
+              type="email"
+              required
+              className={`mt-1 block w-full rounded-md border-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+              }`}
+              value={checkoutData.email}
+              onChange={(e) => setCheckoutData({...checkoutData, email: e.target.value})}
+            />
+          </div>
+          
+          <div>
+            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Shipping Address
+            </label>
+            <textarea
+              required
+              className={`mt-1 block w-full rounded-md border-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+              }`}
+              value={checkoutData.address}
+              onChange={(e) => setCheckoutData({...checkoutData, address: e.target.value})}
+            />
+          </div>
+          
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            Complete Purchase
+          </button>
+        </form>
       </div>
     );
   }

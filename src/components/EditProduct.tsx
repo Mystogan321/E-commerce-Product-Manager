@@ -45,7 +45,7 @@ const EditProduct = () => {
         id: id!,
         ...formData,
         price: parseFloat(formData.price),
-        createdAt: product?.createdAt,
+        createdAt: product?.createdAt ? new Date(product.createdAt) : new Date(),
       })).unwrap();
 
       navigate('/manage');

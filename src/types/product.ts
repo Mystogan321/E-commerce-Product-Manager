@@ -5,7 +5,8 @@ export interface Product {
   price: number;
   image: string;
   category: string;
-  createdAt?: Date;
+  createdAt: Date;
+  soldCount?: number;
 }
 
 export interface CartItem extends Product {

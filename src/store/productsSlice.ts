@@ -33,7 +33,7 @@ export const addProduct = createAsyncThunk(
     const newProduct: Product = {
       ...product,
       id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
     };
     
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -82,6 +82,12 @@ const productsSlice = createSlice({
       state.searchQuery = action.payload;
       state.currentPage = 1;
     },
+    updateProductSaleCount: (state, action: PayloadAction<{id: string; quantity: number}>) => {
+      const product = state.items.find(item => item.id === action.payload.id);
+      if (product) {
+        product.soldCount = (product.soldCount || 0) + action.payload.quantity;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -111,5 +117,5 @@ const productsSlice = createSlice({
   },
 });
 
-export const { setCurrentPage, setSearchQuery } = productsSlice.actions;
+export const { setCurrentPage, setSearchQuery, updateProductSaleCount } = productsSlice.actions;
 export default productsSlice.reducer;
