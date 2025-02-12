@@ -119,8 +119,15 @@ const EditProduct = () => {
             min="0"
             required
             value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-            onKeyDown={(e) => e.key === '-' && e.preventDefault()}
+            onChange={(e) => {
+              const value = e.target.value.replace(/^-/, '');
+              setFormData({ ...formData, price: value });
+            }}
+            onKeyDown={(e) => {
+              if (['-', 'e', 'E'].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             className="mt-1 block w-full rounded-md border shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>

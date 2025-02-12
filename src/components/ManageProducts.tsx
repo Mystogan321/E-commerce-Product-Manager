@@ -1,12 +1,14 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { UseSelector } from 'react-redux';
+import { useAppDispatch } from '../store/store';
 import { RootState } from '../store/store';
 import { deleteProduct } from '../store/productsSlice';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ManageProducts = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { items } = useSelector((state: RootState) => state.products);
 

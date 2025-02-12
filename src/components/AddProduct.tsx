@@ -94,10 +94,14 @@ const AddProduct = () => {
             required
             value={formData.price}
             onChange={(e) => {
-              const value = Math.max(0, parseFloat(e.target.value) || 0);
-              setFormData({ ...formData, price: value.toString() });
+              const value = e.target.value.replace(/^-/, '');
+              setFormData({ ...formData, price: value });
             }}
-            onKeyDown={(e) => ['-', 'e', 'E'].includes(e.key) && e.preventDefault()}
+            onKeyDown={(e) => {
+              if (['-', 'e', 'E'].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>
