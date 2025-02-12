@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { fetchProducts, setCurrentPage, setSearchQuery } from '../store/productsSlice';
 import { addToCart, setLoading } from '../store/cartSlice';
-import { Search, SearchX, PlusCircle } from 'lucide-react';
+import { Search, SearchX, PlusCircle, ArrowDown, ArrowUp, ListTree, Trophy } from 'lucide-react';
 import { Product } from '../types/product';
 import parse from 'html-react-parser';
 import type { AppDispatch } from '../store/store';
@@ -16,39 +16,171 @@ const ProductList = () => {
     (state: RootState) => state.products
   );
   const { isDarkMode } = useSelector((state: RootState) => state.theme);
+  const [sortBy, setSortBy] = useState<string>('');
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const filteredProducts = items.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const categories = useMemo(() => {
+    return Array.from(new Set(items.map(p => p.category))).sort();
+  }, [items]);
+
+  const filteredProducts = items.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const sortedProducts = useMemo(() => {
+    return [...filteredProducts].sort((a, b) => {
+      switch(sortBy) {
+        case 'price_asc':
+          return a.price - b.price;
+        case 'price_desc':
+          return b.price - a.price;
+        case 'category':
+          return a.category.localeCompare(b.category) || a.name.localeCompare(b.name);
+        case 'sold':
+          return (b.soldCount || 0) - (a.soldCount || 0);
+        default:
+          return 0;
+      }
+    });
+  }, [filteredProducts, sortBy]);
 
   const ITEMS_PER_PAGE = 6;
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const displayedProducts = filteredProducts.slice(
+  const displayedProducts = sortedProducts.slice(
     startIndex,
     startIndex + ITEMS_PER_PAGE
   );
 
   return (
     <div className="space-y-6">
-      <div className="relative">
-        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`} />
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchQuery}
-          onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-          className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-            isDarkMode 
-              ? 'bg-gray-800 text-white placeholder-gray-400 border-gray-700' 
-              : 'bg-white text-gray-800 placeholder-gray-500 border-gray-300'
-          }`}
-        />
+      <div className="flex items-center gap-4 mb-6">
+        <div className="flex-1 relative">
+          <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`} />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+            className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+              isDarkMode 
+                ? 'bg-gray-800 text-white placeholder-gray-400 border-gray-700' 
+                : 'bg-white text-gray-800 placeholder-gray-500 border-gray-300'
+            }`}
+          />
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+              isDarkMode 
+                ? 'bg-gray-700 hover:bg-gray-600' 
+                : 'bg-gray-100 hover:bg-gray-200'
+            }`}
+          >
+            <ListTree className="h-5 w-5" />
+            <span>{selectedCategory || 'All Categories'}</span>
+          </button>
+
+          {showCategoryDropdown && (
+            <div className={`absolute top-12 right-0 w-48 max-h-64 overflow-y-auto rounded-lg shadow-lg ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <div className="p-2 space-y-1">
+                <button
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    setShowCategoryDropdown(false);
+                  }}
+                  className={`w-full px-3 py-2 rounded-md text-left ${
+                    isDarkMode 
+                      ? 'hover:bg-gray-700' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                >
+                  All Categories
+                </button>
+                {categories.map(category => (
+                  <button
+                    key={category}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setShowCategoryDropdown(false);
+                    }}
+                    className={`w-full px-3 py-2 rounded-md text-left ${
+                      isDarkMode 
+                        ? 'hover:bg-gray-700' 
+                        : 'hover:bg-gray-100'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="relative">
+          <button 
+            onClick={() => setShowSortDropdown(!showSortDropdown)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
+              isDarkMode 
+                ? 'bg-gray-700 hover:bg-gray-600' 
+                : 'bg-gray-100 hover:bg-gray-200'
+            }`}
+          >
+            <ListTree className="h-5 w-5" />
+            <span>Sort</span>
+          </button>
+
+          {showSortDropdown && (
+            <div className={`absolute top-12 right-0 w-48 rounded-lg shadow-lg ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
+              <div className="p-2 space-y-2">
+                <button
+                  onClick={() => { setSortBy('price_asc'); setShowSortDropdown(false); }}
+                  className="flex items-center w-full px-3 py-2 rounded-md hover:bg-indigo-100 dark:hover:bg-gray-700"
+                >
+                  <ArrowDown className="h-4 w-4 mr-2" />
+                  Price: Low to High
+                </button>
+                <button
+                  onClick={() => { setSortBy('price_desc'); setShowSortDropdown(false); }}
+                  className="flex items-center w-full px-3 py-2 rounded-md hover:bg-indigo-100 dark:hover:bg-gray-700"
+                >
+                  <ArrowUp className="h-4 w-4 mr-2" />
+                  Price: High to Low
+                </button>
+                <button
+                  onClick={() => { setSortBy('category'); setShowSortDropdown(false); }}
+                  className="flex items-center w-full px-3 py-2 rounded-md hover:bg-indigo-100 dark:hover:bg-gray-700"
+                >
+                  <ListTree className="h-4 w-4 mr-2" />
+                  Category
+                </button>
+                <button
+                  onClick={() => { setSortBy('sold'); setShowSortDropdown(false); }}
+                  className="flex items-center w-full px-3 py-2 rounded-md hover:bg-indigo-100 dark:hover:bg-gray-700"
+                >
+                  <Trophy className="h-4 w-4 mr-2" />
+                  Most Popular
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {status === 'loading' && (
