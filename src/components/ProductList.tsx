@@ -62,7 +62,9 @@ const ProductList = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.length > 0 ? (
               displayedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <Link to={`/products/${product.id}`} key={product.id}>
+                  <ProductCard product={product} />
+                </Link>
               ))
             ) : (
               <div className="col-span-full text-center py-12">
@@ -140,16 +142,12 @@ const ProductCard = ({ product }: { product: Product }) => {
         }`}>
           {product.name}
         </h3>
-        <p className={`mt-1 line-clamp-2 ${
-          isDarkMode ? 'text-gray-300' : 'text-gray-600'
-        }`}>
+        <div className={`mt-1 line-clamp-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
           {parse(product.description)}
-        </p>
-        <div className="mt-4 flex items-center justify-between">
-          <span className={`text-xl font-bold ${
-            isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
-          }`}>
-            ${product.price.toFixed(2)}
+        </div>
+        <div className="mt-2 flex items-center justify-between">
+          <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Sold: {product.soldCount || 0}
           </span>
           <button
             onClick={() => {

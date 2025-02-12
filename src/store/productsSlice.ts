@@ -86,6 +86,7 @@ const productsSlice = createSlice({
       const product = state.items.find(item => item.id === action.payload.id);
       if (product) {
         product.soldCount = (product.soldCount || 0) + action.payload.quantity;
+        localStorage.setItem('products', JSON.stringify(state.items));
       }
     },
   },

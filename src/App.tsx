@@ -11,6 +11,7 @@ import Cart from './components/Cart';
 import LoadingOverlay from './components/LoadingOverlay';
 import { login } from './store/authSlice';
 import AuthForm from './components/auth/AuthForm';
+import ProductDetail from './components/ProductDetail';
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -42,6 +43,7 @@ function App() {
           <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="/login" element={<AuthForm type="login" />} />
           <Route path="/register" element={<AuthForm type="register" />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
         </Routes>
       </main>
     </div>
