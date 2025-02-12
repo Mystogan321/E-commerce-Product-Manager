@@ -1,7 +1,8 @@
-import { useTheme } from '../context/ThemeContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 const InputField = () => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useSelector((state: RootState) => state.theme);
 
   return (
     <input
