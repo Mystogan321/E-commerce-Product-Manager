@@ -1,9 +1,9 @@
 // import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import { removeFromCart, updateQuantity, clearCart } from '../store/cartSlice';
+import { removeFromCart, updateQuantity, clearCart, loadCart } from '../store/cartSlice';
 import { Trash2, MinusCircle, PlusCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { updateProductSaleCount } from '../store/productsSlice';
 
 const Cart = () => {
@@ -23,6 +23,10 @@ const Cart = () => {
     email: '',
     address: ''
   });
+
+  useEffect(() => {
+    dispatch(loadCart());
+  }, [dispatch]);
 
   const handleCheckout = () => {
     setShowCheckoutForm(true);
@@ -45,7 +49,6 @@ const Cart = () => {
     // Clear cart and show thank you
     dispatch(clearCart());
     setShowThankYou(true);
-    localStorage.removeItem('cart');
   };
 
   if (cartItems.length === 0 && !showThankYou) {

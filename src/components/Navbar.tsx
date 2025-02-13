@@ -1,11 +1,10 @@
 // import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Package, PlusCircle, Settings2, Sun, Moon, User } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleTheme } from '../store/themeSlice';
 import { logout } from '../store/authSlice';
-import { useClickOutside } from '../hooks/useClickOutside';
 import UserDropdown from './UserDropdown';
 
 const Navbar = () => {
@@ -14,6 +13,12 @@ const Navbar = () => {
   const isDarkMode = useSelector((state: RootState) => state.theme.isDarkMode);
   const cartItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const { user } = useSelector((state: RootState) => state.auth);
+  const location = useLocation();
+  
+  // Hide navbar on auth pages
+  if (['/login', '/register'].includes(location.pathname)) {
+    return null;
+  }
 
   return (
     <nav className="bg-indigo-600 dark:bg-indigo-900 text-white shadow-lg">
@@ -76,14 +81,14 @@ const Navbar = () => {
             {user ? (
               <UserDropdown user={user} />
             ) : (
-              <>
+              <div className="flex space-x-4">
                 <Link to="/login" className="text-white hover:text-gray-200">
                   Login
                 </Link>
                 <Link to="/register" className="text-white hover:text-gray-200">
                   Register
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </div>

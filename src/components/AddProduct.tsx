@@ -58,8 +58,11 @@ const AddProduct = () => {
   }`;
 
   return (
-    <div className={`max-w-2xl mx-auto ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-      <h2 className="text-2xl font-bold mb-6">Add New Product</h2>
+    <div className={`max-w-2xl mx-auto p-6 rounded-lg shadow-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white border border-gray-200'}`}>
+      <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+        Add New Product
+      </h2>
+      
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -78,7 +81,7 @@ const AddProduct = () => {
           <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
             Description
           </label>
-          <div className={`prose prose-sm max-w-none ${isDarkMode ? 'prose-invert' : ''}`}>
+          <div className={`prose prose-sm max-w-none ${isDarkMode ? 'prose-invert' : ''}`} > 
             <Suspense fallback={<div className={`h-48 rounded animate-pulse ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`} />}>
               <ReactQuill
                 theme="snow"
@@ -138,21 +141,21 @@ const AddProduct = () => {
           />
         </div>
 
-        <div className="flex justify-end space-x-4 pt-6">
+        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className={`px-4 py-2 border rounded-md ${
+            className={`px-4 py-2 rounded-md transition-colors ${
               isDarkMode 
-                ? 'border-gray-600 text-gray-100 hover:bg-gray-700' 
-                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                ? 'bg-gray-700 text-gray-100 hover:bg-gray-600' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className={`px-4 py-2 rounded-md ${
+            className={`px-4 py-2 rounded-md transition-colors ${
               isDarkMode 
                 ? 'bg-indigo-700 text-white hover:bg-indigo-600' 
                 : 'bg-indigo-600 text-white hover:bg-indigo-700'
