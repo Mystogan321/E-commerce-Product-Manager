@@ -1,7 +1,11 @@
-import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import parse from 'html-react-parser';
+import { ArrowLeft } from 'lucide-react';
+import { addToCart, setLoading } from '../store/cartSlice';
+import Notification from './Notification';
+import { useState } from 'react';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -9,6 +13,9 @@ const ProductDetail = () => {
     state.products.items.find(p => p.id === id)
   );
   const { isDarkMode } = useSelector((state: RootState) => state.theme);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [showNotification, setShowNotification] = useState(false);
 
   if (!product) {
     return <div className="text-center py-12">Product not found</div>;
@@ -16,6 +23,16 @@ const ProductDetail = () => {
 
   return (
     <div className={`max-w-4xl mx-auto p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+      <button
+        onClick={() => navigate(-1)}
+        className={`mb-6 flex items-center space-x-2 ${
+          isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+        }`}
+      >
+        <ArrowLeft className="h-5 w-5" />
+        <span>Back to Products</span>
+      </button>
+      
       <div className="grid md:grid-cols-2 gap-8">
         <img
           src={product.image}
@@ -42,8 +59,33 @@ const ProductDetail = () => {
               </span>
             </div>
           </div>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setLoading(true));
+              setTimeout(() => {
+                dispatch(addToCart(product));
+                dispatch(setLoading(false));
+                setShowNotification(true);
+              }, 500);
+            }}
+            className={`mt-6 px-6 py-3 rounded-lg font-semibold ${
+              isDarkMode 
+                ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
+                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            }`}
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
+      {showNotification && (
+        <Notification 
+          message="Product added to cart!"
+          duration={3000}
+          onClose={() => setShowNotification(false)}
+        />
+      )}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import parse from 'html-react-parser';
 import type { AppDispatch } from '../store/store';
 import { Link } from 'react-router-dom';
 import { useClickOutside } from '../hooks/useClickOutside';
+import Notification from '../components/Notification';
 
 
 const ProductList = () => {
@@ -21,6 +22,7 @@ const ProductList = () => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [notificationProduct, setNotificationProduct] = useState<string | null>(null);
 
   const sortDropdownRef = useRef<HTMLDivElement>(null);
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
@@ -202,7 +204,10 @@ const ProductList = () => {
             {filteredProducts.length > 0 ? (
               displayedProducts.map((product) => (
                 <Link to={`/products/${product.id}`} key={product.id}>
-                  <ProductCard product={product} />
+                  <ProductCard 
+                    product={product} 
+                    setNotification={setNotificationProduct}
+                  />
                 </Link>
               ))
             ) : (
@@ -256,44 +261,58 @@ const ProductList = () => {
           Failed to load products. Please try again later.
         </div>
       )}
+
+      {notificationProduct && (
+        <Notification 
+          message={`${notificationProduct} added to cart!`}
+          duration={3000}
+          onClose={() => setNotificationProduct(null)}
+        />
+      )}
     </div>
   );
 };
 
-const ProductCard = ({ product }: { product: Product }) => {
+const ProductCard = ({ 
+  product,
+  setNotification 
+}: { 
+  product: Product;
+  setNotification: (productName: string) => void;
+}) => {
   const dispatch = useDispatch();
   const { isDarkMode } = useSelector((state: RootState) => state.theme);
 
   return (
     <div className={`rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow ${
-      isDarkMode 
-        ? 'bg-gray-800 hover:bg-gray-700' 
-        : 'bg-white hover:bg-gray-50'
+      isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
     }`}>
-      <img
-        src={product.image}
-        alt={product.name}
-        className="w-full h-48 object-cover"
-      />
-      <div className="p-4">
-        <h3 className={`text-lg font-semibold ${
-          isDarkMode ? 'text-white' : 'text-gray-800'
-        }`}>
-          {product.name}
-        </h3>
-        <div className={`mt-1 line-clamp-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-          {parse(product.description)}
+      <Link to={`/products/${product.id}`} className="block">
+        <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
+        <div className="p-4">
+          <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            {product.name}
+          </h3>
+          <div className={`mt-1 line-clamp-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            {parse(product.description)}
+          </div>
         </div>
+      </Link>
+
+      <div className="p-4 pt-0">
         <div className="mt-2 flex items-center justify-between">
-          <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Sold: {product.soldCount || 0}
+          <span className={`text-xl ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>
+          ${product.price}
           </span>
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               dispatch(setLoading(true));
               setTimeout(() => {
                 dispatch(addToCart(product));
                 dispatch(setLoading(false));
+                setNotification(product.name);
               }, 500);
             }}
             className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
