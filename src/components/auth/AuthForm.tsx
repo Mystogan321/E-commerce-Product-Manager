@@ -23,6 +23,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isDarkMode } = useSelector((state: RootState) => state.theme);
+  const { error: authError } = useSelector((state: RootState) => state.auth);
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,7 +31,22 @@ const AuthForm = ({ type }: AuthFormProps) => {
   };
 
   const validatePassword = (password: string) => {
-    return password.length >= 6;
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
+
+    return {
+      isValid: password.length >= minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar,
+      errors: {
+        minLength,
+        hasUpperCase,
+        hasLowerCase,
+        hasNumber,
+        hasSpecialChar
+      }
+    };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,8 +58,23 @@ const AuthForm = ({ type }: AuthFormProps) => {
       return;
     }
 
-    if (!validatePassword(password)) {
-      setError('Password must be at least 6 characters');
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      const missingRequirements = Object.entries(passwordValidation.errors)
+        .filter(([_, isValid]) => !isValid)
+        .map(([key]) => {
+          switch(key) {
+            case 'minLength': return 'at least 8 characters';
+            case 'hasUpperCase': return 'one uppercase letter';
+            case 'hasLowerCase': return 'one lowercase letter';
+            case 'hasNumber': return 'one number';
+            case 'hasSpecialChar': return 'one special character';
+            default: return '';
+          }
+        })
+        .filter(Boolean);
+
+      setError(`Password must contain: ${missingRequirements.join(', ')}`);
       return;
     }
 
@@ -116,10 +147,10 @@ const AuthForm = ({ type }: AuthFormProps) => {
               {type === 'login' ? 'Welcome Back!' : 'Create Account'}
             </h2>
 
-            {error && (
+            {(authError || error) && (
               <div className="mb-6 p-4 border border-red-300 bg-red-50 rounded-lg flex items-center">
                 <XCircle className="h-5 w-5 text-red-500 mr-2" />
-                <span className="text-red-600">{error}</span>
+                <span className="text-red-600">{authError || error}</span>
               </div>
             )}
 
@@ -130,7 +161,13 @@ const AuthForm = ({ type }: AuthFormProps) => {
                   <input
                     type="text"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (error || authError) {
+                        setError('');
+                        dispatch(clearAuthError());
+                      }
+                    }}
                     placeholder="Full Name"
                     className={`pl-10 w-full rounded-lg py-3 px-4 border-2 focus:ring-2 focus:ring-indigo-500 ${
                       isDarkMode 
@@ -146,7 +183,13 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (error || authError) {
+                      setError('');
+                      dispatch(clearAuthError());
+                    }
+                  }}
                   placeholder="Email Address"
                   className={`pl-10 w-full rounded-lg py-3 px-4 border-2 focus:ring-2 focus:ring-indigo-500 ${
                     isDarkMode 
@@ -161,7 +204,13 @@ const AuthForm = ({ type }: AuthFormProps) => {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (error || authError) {
+                      setError('');
+                      dispatch(clearAuthError());
+                    }
+                  }}
                   placeholder="Password"
                   className={`pl-10 w-full rounded-lg py-3 px-4 border-2 focus:ring-2 focus:ring-indigo-500 ${
                     isDarkMode 
@@ -170,6 +219,8 @@ const AuthForm = ({ type }: AuthFormProps) => {
                   }`}
                 />
               </div>
+
+              
 
               <button
                 type="submit"
