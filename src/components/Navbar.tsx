@@ -5,6 +5,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { toggleTheme } from '../store/themeSlice';
 import { logout } from '../store/authSlice';
+import { useClickOutside } from '../hooks/useClickOutside';
+import UserDropdown from './UserDropdown';
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -72,24 +74,7 @@ const Navbar = () => {
             </button>
 
             {user ? (
-              <div className="relative group">
-                <button className="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 transition-colors">
-                  <span className="font-medium uppercase">
-                    {user.name.charAt(0)}
-                  </span>
-                </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block dark:bg-gray-800">
-                  <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                    {user.name}
-                  </div>
-                  <button
-                    onClick={() => dispatch(logout())}
-                    className="block w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
+              <UserDropdown user={user} />
             ) : (
               <>
                 <Link to="/login" className="text-white hover:text-gray-200">

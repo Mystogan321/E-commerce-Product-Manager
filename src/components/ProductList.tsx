@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { fetchProducts, setCurrentPage, setSearchQuery } from '../store/productsSlice';
@@ -8,6 +8,7 @@ import { Product } from '../types/product';
 import parse from 'html-react-parser';
 import type { AppDispatch } from '../store/store';
 import { Link } from 'react-router-dom';
+import { useClickOutside } from '../hooks/useClickOutside';
 
 
 const ProductList = () => {
@@ -21,9 +22,15 @@ const ProductList = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+
+  useClickOutside(sortDropdownRef, () => setShowSortDropdown(false));
+  useClickOutside(categoryDropdownRef, () => setShowCategoryDropdown(false));
 
   const categories = useMemo(() => {
     return Array.from(new Set(items.map(p => p.category))).sort();
@@ -79,7 +86,7 @@ const ProductList = () => {
           />
         </div>
 
-        <div className="relative">
+        <div className="relative" ref={categoryDropdownRef}>
           <button
             onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
@@ -131,7 +138,7 @@ const ProductList = () => {
           )}
         </div>
 
-        <div className="relative">
+        <div className="relative" ref={sortDropdownRef}>
           <button 
             onClick={() => setShowSortDropdown(!showSortDropdown)}
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
