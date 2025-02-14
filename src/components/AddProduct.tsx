@@ -81,17 +81,27 @@ const AddProduct = () => {
           <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>
             Description
           </label>
-          <div className={`prose prose-sm max-w-none ${isDarkMode ? 'prose-invert' : ''}`} > 
-            <Suspense fallback={<div className={`h-48 rounded animate-pulse ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`} />}>
-              <ReactQuill
-                theme="snow"
-                value={formData.description}
-                onChange={(value) => setFormData({ ...formData, description: value })}
-                modules={modules}
-                formats={formats}
-                className={`h-48 mb-12 ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'}`}
-              />
-            </Suspense>
+          <div className="relative">
+            <div className={`border-2 rounded-md ${isDarkMode ? 'border-gray-300' : 'border-gray-400'} overflow-hidden`}>
+              <div className={`prose prose-sm max-w-none ${isDarkMode ? 'prose-invert' : ''}`}>
+                <Suspense fallback={
+                  <div className={`h-48 rounded animate-pulse ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`} />
+                }>
+                  <ReactQuill
+                    theme="snow"
+                    value={formData.description}
+                    onChange={(value) => setFormData({ ...formData, description: value })}
+                    modules={modules}
+                    formats={formats}
+                    className={`h-48 [&_.ql-toolbar]:border-none [&_.ql-container]:border-none ${
+                      isDarkMode ? 
+                      'bg-gray-800 [&_.ql-editor]:text-white [&_.ql-toolbar]:bg-gray-700' : 
+                      'bg-white'
+                    } [&_.ql-editor]:min-h-[120px] [&_.ql-editor]:overflow-y-auto`}
+                  />
+                </Suspense>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -165,6 +175,105 @@ const AddProduct = () => {
           </button>
         </div>
       </form>
+
+      <style>
+        {`
+          .dark .ql-snow .ql-stroke {
+            stroke: white !important;
+          }
+          .dark .ql-snow .ql-fill {
+            fill: white !important;
+          }
+          .dark .ql-snow .ql-picker {
+            color: white !important;
+          }
+          .dark .ql-snow .ql-editor ul,
+          .dark .ql-snow .ql-editor ol {
+            color: white !important;
+          }
+          .dark .ql-snow .ql-editor li:before {
+            color: white !important;
+          }
+          .dark .ql-snow .ql-editor blockquote {
+            border-left-color: white !important;
+            color: #e5e7eb !important;
+          }
+          .dark .ql-snow .ql-editor pre {
+            background-color: #1f2937 !important;
+            color: white !important;
+          }
+          .ql-toolbar.ql-snow {
+            border: none !important;
+            border-bottom: 1px solid #e5e7eb !important;
+          }
+          .ql-container.ql-snow {
+            border: none !important;
+          }
+          .dark .ql-toolbar.ql-snow {
+            border-bottom-color: #374151 !important;
+          }
+          .ql-editor {
+            max-height: 180px;
+            overflow-y: auto;
+          }
+          .dark .ql-editor::-webkit-scrollbar {
+            width: 8px;
+            background-color: #1f2937;
+          }
+          .dark .ql-editor::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+            border-radius: 4px;
+          }
+          .dark .ql-snow .ql-picker-label {
+            color: white !important;
+          }
+          .dark .ql-snow .ql-picker-options {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
+          }
+          .dark .ql-snow .ql-picker-item {
+            color: white !important;
+          }
+          .dark .ql-snow .ql-picker-item.ql-selected {
+            color: #818cf8 !important;
+          }
+          .dark .ql-snow .ql-header .ql-picker-label {
+            color: white !important;
+          }
+          .dark .ql-snow .ql-header .ql-picker-item {
+            color: white !important;
+          }
+          .dark .ql-snow .ql-header .ql-picker-item.ql-selected {
+            color: #818cf8 !important;
+          }
+          /* Header picker hover states */
+          .ql-snow .ql-picker-label:hover,
+          .ql-snow .ql-picker-label:hover .ql-stroke {
+            color: #818cf8 !important;
+            stroke: #818cf8 !important;
+          }
+          
+          .dark .ql-snow .ql-picker-label:hover,
+          .dark .ql-snow .ql-picker-label:hover .ql-stroke {
+            color: #818cf8 !important;
+            stroke: #818cf8 !important;
+          }
+
+          /* Selected header state */
+          .ql-snow .ql-picker-item.ql-selected,
+          .ql-snow .ql-picker-item.ql-active {
+            color: #818cf8 !important;
+          }
+
+          /* Hover states for picker items */
+          .ql-snow .ql-picker-item:hover {
+            color: #818cf8 !important;
+          }
+          .dark .ql-snow .ql-picker-item:hover {
+            color: #818cf8 !important;
+          }
+        `}
+      </style>
     </div>
   );
 };

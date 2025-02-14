@@ -1,0 +1,23 @@
+/* Add these styles */
+.prose ul,
+.prose ol {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin: 0.25rem 0;
+}
+
+.dark .prose {
+  color: #e5e7eb;
+}
+
+.dark .prose ul,
+.dark .prose ol {
+  color: #e5e7eb;
+}
+
+.dark .prose li::marker {
+  color: #d1d5db;
+} 

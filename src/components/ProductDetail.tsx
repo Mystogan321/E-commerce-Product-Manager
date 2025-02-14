@@ -46,8 +46,16 @@ const ProductDetail = () => {
           <p className={`text-2xl ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>
             ${product.price.toFixed(2)}
           </p>
-          <div className={`mt-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            {parse(product.description)}
+          <div className={`prose prose-sm max-w-none ${isDarkMode ? 'prose-invert' : ''}`}>
+            <div 
+              className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+              dangerouslySetInnerHTML={{ 
+                __html: product.description.replace(
+                  /<ul>|<ol>/g, 
+                  '<ul style="list-style:disc;padding-left:1.5rem">'
+                ) 
+              }}
+            />
           </div>
           <div className={`mt-6 p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
             <div className="flex justify-between items-center">
@@ -91,3 +99,25 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail; 
+
+<style>
+  {`
+    .prose h2 {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+    }
+    .prose h3 {
+      font-size: 1.25rem;
+      margin: 0.875rem 0;
+    }
+    .prose pre {
+      background-color: #1f2937;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+    }
+    .dark .prose pre {
+      background-color: #111827;
+    }
+  `}
+</style> 

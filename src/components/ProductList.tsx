@@ -237,7 +237,7 @@ const ProductList = () => {
               <button
                 onClick={() => dispatch(setCurrentPage(currentPage - 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 border rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                className="px-4 py-2 border rounded-lg disabled:opacity-50 hover:bg-gray-50 hover:opacity-50"
               >
                 Previous
               </button>
@@ -247,7 +247,7 @@ const ProductList = () => {
               <button
                 onClick={() => dispatch(setCurrentPage(currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 border rounded-lg disabled:opacity-50 hover:bg-gray-50"
+                className="px-4 py-2 border rounded-lg disabled:opacity-50 hover:bg-gray-50 hover:opacity-80"
               >
                 Next
               </button>
@@ -293,8 +293,18 @@ const ProductCard = ({
           <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
             {product.name}
           </h3>
-          <div className={`mt-1 line-clamp-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            {parse(product.description)}
+          <div className="prose prose-sm max-w-none dark:prose-invert">
+            <div 
+              className={`text-sm line-clamp-2 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}
+              dangerouslySetInnerHTML={{ 
+                __html: product.description.replace(
+                  /<ul>|<ol>/g, 
+                  '<ul style="list-style:disc;padding-left:1.5rem">'
+                ) 
+              }}
+            />
           </div>
         </div>
       </Link>
@@ -302,7 +312,7 @@ const ProductCard = ({
       <div className="p-4 pt-0">
         <div className="mt-2 flex items-center justify-between">
           <span className={`text-xl ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>
-          ${product.price}
+            ${product.price}
           </span>
           <button
             onClick={(e) => {

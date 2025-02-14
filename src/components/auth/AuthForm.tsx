@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, RootState } from '../../store/store';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { 
   login, 
   register, 
@@ -9,7 +9,8 @@ import {
   registerFailure, 
   clearAuthError 
 } from '../../store/authSlice';
-import { Smartphone, Lock, Mail, User, XCircle } from 'lucide-react';
+import { Smartphone, Lock, Mail, User, XCircle, ShoppingCart, Sun, Moon } from 'lucide-react';
+import { toggleTheme } from '../../store/themeSlice';
 
 interface AuthFormProps {
   type: 'login' | 'register';
@@ -24,6 +25,7 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const navigate = useNavigate();
   const { isDarkMode } = useSelector((state: RootState) => state.theme);
   const { error: authError } = useSelector((state: RootState) => state.auth);
+  const dispatchRedux = useDispatch();
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -143,6 +145,27 @@ const AuthForm = ({ type }: AuthFormProps) => {
 
           {/* Right Side - Form */}
           <div className="md:w-1/2 p-12">
+            <div className="flex justify-between items-center mb-10">
+              <div className="flex items-center space-x-2">
+                <ShoppingCart 
+                  className={`h-8 w-8 ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`} 
+                />
+                <span className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  iCommerce
+                </span>
+              </div>
+              <button
+                onClick={() => dispatchRedux(toggleTheme())}
+                className={`p-2 rounded-full hover:bg-opacity-20 transition-colors ${
+                  isDarkMode 
+                    ? 'text-gray-200 hover:bg-gray-600' 
+                    : 'text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+              </button>
+            </div>
+
             <h2 className={`text-4xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               {type === 'login' ? 'Welcome Back!' : 'Create Account'}
             </h2>
@@ -219,8 +242,6 @@ const AuthForm = ({ type }: AuthFormProps) => {
                   }`}
                 />
               </div>
-
-              
 
               <button
                 type="submit"
